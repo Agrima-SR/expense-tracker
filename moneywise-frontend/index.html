@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BudgetBee</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<!-- ================= WELCOME PAGE ================= -->
+
+<section id="welcomePage" class="page active">
+
+    <div class="welcome-container">
+
+        <div class="welcome-content">
+
+            <div class="logo">
+                <span>💰</span>
+                <h1>BudgetBee</h1>
+            </div>
+
+            <h2>
+                Take control of your
+                <span>money.</span>
+            </h2>
+
+            <p>
+                Track your income, manage expenses, monitor budgets
+                and understand your financial habits — all in one place.
+            </p>
+
+            <button class="primary-btn" onclick="showLogin()">
+                Get Started →
+            </button>
+
+        </div>
+
+        <div class="welcome-card">
+
+            <div class="mini-card">
+                <span>Balance</span>
+                <strong id="welcomeBalance">₹45,280</strong>
+                <small>Manage your money smarter</small>
+            </div>
+
+            <div class="mini-chart">
+                <div class="bar b1"></div>
+                <div class="bar b2"></div>
+                <div class="bar b3"></div>
+                <div class="bar b4"></div>
+                <div class="bar b5"></div>
+                <div class="bar b6"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= LOGIN PAGE ================= -->
+
+<section id="loginPage" class="page">
+
+    <div class="login-container">
+
+        <div class="login-box">
+
+            <div class="login-logo">💰</div>
+
+            <h1>Welcome Back</h1>
+
+            <p>Login to manage your finances</p>
+
+            <form onsubmit="login(event)">
+
+                <div class="input-group">
+
+                    <label>Email</label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email"
+                        required
+                    >
+
+                </div>
+
+                <div class="input-group">
+
+                    <label>Password</label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter password"
+                        required
+                    >
+
+                </div>
+
+                <button class="primary-btn full-btn">
+                    Login
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= DASHBOARD ================= -->
+
+<section id="dashboardPage" class="dashboard-page">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            <span>💰</span>
+            <h2>BudgetBee</h2>
+        </div>
+
+        <!-- PROFILE -->
+
+        <div class="profile-card">
+
+            <div class="profile-icon">
+                👤
+            </div>
+
+            <div>
+                <strong id="profileName">User</strong>
+                <small id="profileEmail">user@email.com</small>
+            </div>
+
+        </div>
+
+
+        <!-- NAVIGATION -->
+
+        <nav>
+
+            <button
+                class="nav-item active"
+                onclick="showSection('dashboard', this)">
+                📊 Dashboard
+            </button>
+
+            <button
+                class="nav-item"
+                onclick="showSection('transactions', this)">
+                🧾 History
+            </button>
+
+            <button
+                class="nav-item"
+                onclick="showSection('budget', this)">
+                🎯 Budget
+            </button>
+
+            <button
+                class="nav-item"
+                onclick="showSection('reports', this)">
+                📈 Reports
+            </button>
+
+            <button
+                class="nav-item"
+                onclick="showSection('goals', this)">
+                🏆 Savings Goals
+            </button>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <button onclick="toggleTheme()">
+                🌓 Change Theme
+            </button>
+
+            <button onclick="logout()">
+                🚪 Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="main-content">
+
+        <!-- HEADER -->
+
+        <header class="top-header">
+
+            <div>
+
+                <h1 id="sectionTitle">
+                    Dashboard
+                </h1>
+
+                <p>
+                    Here's your financial overview
+                </p>
+
+            </div>
+
+            <div class="header-actions">
+
+                <button
+                    class="income-btn"
+                    onclick="openTransactionModal('income')">
+                    + Income
+                </button>
+
+                <button
+                    class="expense-btn"
+                    onclick="openTransactionModal('expense')">
+                    + Expense
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- ================= DASHBOARD ================= -->
+
+        <section
+            id="dashboard"
+            class="content-section active-section">
+
+            <!-- SUMMARY -->
+
+            <div class="summary-grid">
+
+                <div class="summary-card">
+
+                    <div class="summary-icon income-icon">
+                        ↑
+                    </div>
+
+                    <div>
+                        <span>Total Income</span>
+                        <h2 id="totalIncome">₹0</h2>
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <div class="summary-icon expense-icon">
+                        ↓
+                    </div>
+
+                    <div>
+                        <span>Total Expenses</span>
+                        <h2 id="totalExpense">₹0</h2>
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <div class="summary-icon profit-icon">
+                        ₹
+                    </div>
+
+                    <div>
+                        <span>Net Balance</span>
+                        <h2 id="netBalance">₹0</h2>
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <div class="summary-icon budget-icon">
+                        🎯
+                    </div>
+
+                    <div>
+                        <span>Budget Left</span>
+                        <h2 id="budgetLeft">₹0</h2>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- SMART INSIGHT -->
+
+            <div class="insight-card">
+
+                <div class="insight-icon">
+                    💡
+                </div>
+
+                <div>
+
+                    <h3>Smart Spending Insight</h3>
+
+                    <p id="smartInsight">
+                        Add some transactions to receive spending insights.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- CHARTS -->
+
+            <div class="dashboard-grid">
+
+                <div class="panel chart-panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <h2>Income vs Expenses</h2>
+                            <p>Financial performance</p>
+                        </div>
+
+                    </div>
+
+                    <canvas id="financeChart"></canvas>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <h2>Expense Categories</h2>
+                            <p>Where your money goes</p>
+                        </div>
+
+                    </div>
+
+                    <canvas id="categoryChart"></canvas>
+
+                </div>
+
+            </div>
+
+
+            <!-- RECENT TRANSACTIONS -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h2>Recent Transactions</h2>
+                        <p>Your latest financial activities</p>
+                    </div>
+
+                    <button onclick="showSection('transactions')">
+                        View All →
+                    </button>
+
+                </div>
+
+                <div id="recentTransactions"></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= HISTORY ================= -->
+
+        <section
+            id="transactions"
+            class="content-section">
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h2>Transaction History</h2>
+                        <p>All your income and expenses</p>
+                    </div>
+
+                </div>
+
+
+                <div class="filters">
+
+                    <input
+                        type="text"
+                        id="searchTransaction"
+                        placeholder="🔍 Search transactions..."
+                        oninput="displayTransactions()"
+                    >
+
+                    <select
+                        id="filterType"
+                        onchange="displayTransactions()">
+
+                        <option value="all">
+                            All Transactions
+                        </option>
+
+                        <option value="income">
+                            Income
+                        </option>
+
+                        <option value="expense">
+                            Expenses
+                        </option>
+
+                    </select>
+
+
+                    <select
+                        id="filterCategory"
+                        onchange="displayTransactions()">
+
+                        <option value="all">
+                            All Categories
+                        </option>
+
+                        <option>Food</option>
+                        <option>Shopping</option>
+                        <option>Transport</option>
+                        <option>Education</option>
+                        <option>Entertainment</option>
+                        <option>Medical</option>
+                        <option>Rent</option>
+                        <option>Internet</option>
+                        <option>Electricity Bill</option>
+                        <option>Other</option>
+
+                    </select>
+
+                </div>
+
+
+                <div id="transactionHistory"></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= BUDGET ================= -->
+
+        <section
+            id="budget"
+            class="content-section">
+
+            <div class="budget-top">
+
+                <div class="panel budget-setting">
+
+                    <h2>Monthly Budget</h2>
+
+                    <p>
+                        Set your spending limit for the month.
+                    </p>
+
+                    <div class="budget-input">
+
+                        <span>₹</span>
+
+                        <input
+                            type="number"
+                            id="budgetInput"
+                            placeholder="Enter budget"
+                            min="1"
+                        >
+
+                        <button onclick="setBudget()">
+                            Set Budget
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel budget-overview">
+
+                    <h2>Budget Overview</h2>
+
+                    <div class="budget-circle">
+
+                        <div>
+
+                            <strong id="budgetPercentage">
+                                0%
+                            </strong>
+
+                            <small>Used</small>
+
+                        </div>
+
+                    </div>
+
+                    <p id="budgetText">
+                        Set a budget to see your overview.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="panel">
+
+                <h2>Category Spending</h2>
+
+                <div id="budgetCategories"></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= REPORTS ================= -->
+
+        <section
+            id="reports"
+            class="content-section">
+
+            <div class="report-header">
+
+                <div>
+
+                    <h2>Weekly Financial Report</h2>
+
+                    <p>
+                        Your financial activity for the last 7 days
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-grid">
+
+                <div class="summary-card">
+
+                    <span>Weekly Income</span>
+
+                    <h2 id="weeklyIncome">
+                        ₹0
+                    </h2>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <span>Weekly Expenses</span>
+
+                    <h2 id="weeklyExpense">
+                        ₹0
+                    </h2>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <span>Weekly Profit</span>
+
+                    <h2 id="weeklyProfit">
+                        ₹0
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="panel">
+
+                <h2>Weekly Activity</h2>
+
+                <canvas id="weeklyChart"></canvas>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= SAVINGS GOALS ================= -->
+
+        <section
+            id="goals"
+            class="content-section">
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <h2>Savings Goals</h2>
+
+                        <p>
+                            Create goals and track your savings.
+                        </p>
+
+                    </div>
+
+                    <button onclick="openGoalModal()">
+                        + Add Goal
+                    </button>
+
+                </div>
+
+                <div id="goalsContainer"
+                     class="goals-grid">
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</section>
+
+
+<!-- ================= TRANSACTION MODAL ================= -->
+
+<div
+    id="transactionModal"
+    class="modal">
+
+    <div class="modal-box">
+
+        <button
+            class="close-btn"
+            onclick="closeTransactionModal()">
+            ×
+        </button>
+
+        <h2 id="modalTitle">
+            Add Transaction
+        </h2>
+
+        <form onsubmit="addTransaction(event)">
+
+            <input
+                type="hidden"
+                id="transactionType"
+            >
+
+
+            <div class="input-group">
+
+                <label>Amount</label>
+
+                <input
+                    type="number"
+                    id="amount"
+                    placeholder="₹0"
+                    required
+                    min="1"
+                >
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label>Category</label>
+
+                <select
+                    id="category"
+                    required>
+
+                    <option value="">
+                        Select category
+                    </option>
+
+                    <option>Salary</option>
+                    <option>Freelance</option>
+                    <option>Business</option>
+
+                    <option>Electricity Bill</option>
+                    <option>Water Bill</option>
+                    <option>Internet</option>
+                    <option>Rent</option>
+
+                    <option>Food</option>
+                    <option>Shopping</option>
+                    <option>Transport</option>
+                    <option>Education</option>
+                    <option>Entertainment</option>
+
+                    <option>Medical</option>
+                    <option>Other</option>
+
+                </select>
+
+            </div>
+
+
+            <!-- PAYMENT METHOD -->
+
+            <div class="input-group">
+
+                <label>Payment Method</label>
+
+                <select id="paymentMethod">
+
+                    <option>UPI</option>
+                    <option>Cash</option>
+                    <option>Debit Card</option>
+                    <option>Credit Card</option>
+                    <option>Bank Transfer</option>
+
+                </select>
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label>Description</label>
+
+                <input
+                    type="text"
+                    id="description"
+                    placeholder="Optional description"
+                >
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label>Date</label>
+
+                <input
+                    type="date"
+                    id="transactionDate"
+                    required
+                >
+
+            </div>
+
+
+            <button class="primary-btn full-btn">
+                Add Transaction
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ================= GOAL MODAL ================= -->
+
+<div
+    id="goalModal"
+    class="modal">
+
+    <div class="modal-box">
+
+        <button
+            class="close-btn"
+            onclick="closeGoalModal()">
+            ×
+        </button>
+
+        <h2>Create Savings Goal</h2>
+
+        <form onsubmit="addGoal(event)">
+
+            <div class="input-group">
+
+                <label>Goal Name</label>
+
+                <input
+                    type="text"
+                    id="goalName"
+                    placeholder="Eg: New Laptop"
+                    required
+                >
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label>Target Amount</label>
+
+                <input
+                    type="number"
+                    id="goalTarget"
+                    placeholder="₹50,000"
+                    min="1"
+                    required
+                >
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label>Amount Already Saved</label>
+
+                <input
+                    type="number"
+                    id="goalSaved"
+                    placeholder="₹0"
+                    min="0"
+                    value="0"
+                >
+
+            </div>
+
+
+            <button class="primary-btn full-btn">
+                Create Goal
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
