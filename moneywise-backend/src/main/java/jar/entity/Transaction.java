@@ -20,13 +20,15 @@ public class Transaction {
     private String category;
     private String paymentMethod;
     private String date;
+    private String userEmail;
 
     public Transaction() {
     }
 
     public Transaction(Long id, String description, Double amount,
                        String type, String category,
-                       String paymentMethod, String date) {
+                       String paymentMethod, String date,
+                       String userEmail) {
 
         this.id = id;
         this.description = description;
@@ -35,6 +37,7 @@ public class Transaction {
         this.category = category;
         this.paymentMethod = paymentMethod;
         this.date = date;
+        this.userEmail = userEmail;
     }
 
     public Long getId() {
@@ -91,5 +94,13 @@ public class Transaction {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 }
