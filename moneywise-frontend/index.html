@@ -82,6 +82,15 @@
 
             <form onsubmit="login(event)">
 
+<div class="input-group">
+    <label>Your Name</label>
+    <input
+        type="text"
+        id="name"
+        placeholder="Enter your name"
+        required
+    >
+</div>
                 <div class="input-group">
 
                     <label>Email</label>
@@ -183,6 +192,9 @@
                 onclick="showSection('goals', this)">
                 🏆 Savings Goals
             </button>
+            <button class="nav-item" onclick="showSection('calendar', this)">
+    📅 Spending Calendar
+</button>
 
         </nav>
 
@@ -216,9 +228,12 @@
                     Dashboard
                 </h1>
 
-                <p>
-                    Here's your financial overview
-                </p>
+            
+                 <h2 id="welcomeMessage">
+        Welcome back! 👋
+    </h2>
+
+    <p>Here's your financial overview for today.</p>
 
             </div>
 
@@ -307,7 +322,66 @@
                 </div>
 
             </div>
+             <!-- ================= FINANCIAL HEALTH SCORE ================= -->
 
+<div class="health-card">
+
+    <div class="health-header">
+        <div>
+            <h2>🚦 Financial Health Score</h2>
+            <p>Your overall financial wellness based on your spending habits.</p>
+        </div>
+
+        <div class="health-score">
+            <strong id="healthScore">0</strong>
+            <span>/100</span>
+        </div>
+    </div>
+
+    <div class="health-status" id="healthStatus">
+        Add transactions to calculate your score.
+    </div>
+
+    <div class="health-bars">
+
+        <div class="health-item">
+            <div>
+                <span>💰 Income vs Expenses</span>
+                <strong id="incomeHealth">0%</strong>
+            </div>
+
+            <div class="health-progress">
+                <div id="incomeHealthBar"></div>
+            </div>
+        </div>
+
+
+        <div class="health-item">
+            <div>
+                <span>🎯 Budget Management</span>
+                <strong id="budgetHealth">0%</strong>
+            </div>
+
+            <div class="health-progress">
+                <div id="budgetHealthBar"></div>
+            </div>
+        </div>
+
+
+        <div class="health-item">
+            <div>
+                <span>📊 Expense Control</span>
+                <strong id="expenseHealth">0%</strong>
+            </div>
+
+            <div class="health-progress">
+                <div id="expenseHealthBar"></div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
 
             <!-- SMART INSIGHT -->
 
@@ -531,7 +605,17 @@
 
             </div>
 
+<!-- ================= BUDGET FORECAST ================= -->
 
+<div class="panel budget-forecast">
+
+    <h2>🔮 Budget Forecast</h2>
+
+    <p id="forecastText">
+        Set a budget and add some expenses to see your forecast.
+    </p>
+
+</div>
             <div class="panel">
 
                 <h2>Category Spending</h2>
@@ -647,6 +731,66 @@
         </section>
 
     </main>
+
+</section>
+<section id="calendar" class="content-section">
+
+    <div class="panel calendar-panel">
+
+        <div class="calendar-header">
+
+            <button class="calendar-nav-btn"
+                    onclick="changeCalendarMonth(-1)">
+                ‹
+            </button>
+
+            <div class="calendar-title">
+                <h2 id="calendarMonthYear">
+                    September 2026
+                </h2>
+
+                <p>Track your daily spending</p>
+            </div>
+
+            <button class="calendar-nav-btn"
+                    onclick="changeCalendarMonth(1)">
+                ›
+            </button>
+
+        </div>
+
+
+        <div class="calendar-actions">
+
+            <button onclick="goToToday()">
+                Today
+            </button>
+
+        </div>
+
+
+        <div class="calendar-weekdays">
+
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+            <div>Sun</div>
+
+        </div>
+
+
+        <div id="calendarGrid" class="calendar-grid">
+        </div>
+
+
+        <div id="selectedDayDetails"
+             class="selected-day-details">
+        </div>
+
+    </div>
 
 </section>
 
