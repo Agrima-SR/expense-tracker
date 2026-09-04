@@ -344,7 +344,8 @@ nav {
 .main-content {
     margin-left: 250px;
     width: calc(100% - 250px);
-    padding: 35px;
+    padding: 25px;
+    overflow-x: hidden;
 }
 
 .top-header {
@@ -454,7 +455,94 @@ nav {
     background: #fff8e1;
 }
 
+/* ================= FINANCIAL HEALTH SCORE ================= */
 
+.health-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+}
+
+.health-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.health-header h2 {
+    font-size: 19px;
+    margin-bottom: 5px;
+}
+
+.health-header p {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.health-score {
+    min-width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    background: var(--primary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.health-score strong {
+    font-size: 28px;
+    color: var(--primary);
+}
+
+.health-score span {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.health-status {
+    margin: 18px 0;
+    padding: 12px 15px;
+    background: var(--primary-light);
+    border-radius: 10px;
+    color: var(--primary);
+    font-weight: bold;
+}
+
+.health-bars {
+    display: grid;
+    gap: 15px;
+}
+
+.health-item > div:first-child {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 7px;
+    font-size: 13px;
+}
+
+.health-item strong {
+    color: var(--primary);
+}
+
+.health-progress {
+    height: 8px;
+    background: #edf0ee;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.health-progress div {
+    height: 100%;
+    width: 0%;
+    background: var(--primary);
+    border-radius: 20px;
+    transition: width 0.5s ease;
+}
 /* ================= INSIGHT ================= */
 
 .insight-card {
@@ -704,7 +792,15 @@ canvas {
     color: var(--muted);
     margin-bottom: 15px;
 }
+.goal-smart-info {
+    font-size: 13px;
+    margin-top: 8px;
+    margin-bottom: 6px !important;
+}
 
+.goal-smart-info strong {
+    color: var(--primary);
+}
 .goal-progress {
     height: 10px;
     background: #edf0ee;
@@ -880,4 +976,708 @@ body.dark .budget-circle > div {
         max-width: 360px;
     }
 
+}
+/* ================= SPENDING CALENDAR ================= */
+
+.calendar-panel {
+    padding: 25px;
+}
+
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.calendar-title {
+    text-align: center;
+}
+
+.calendar-title h2 {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.calendar-title p {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.calendar-nav-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-size: 28px;
+    font-weight: bold;
+    display: grid;
+    place-items: center;
+    transition: 0.2s;
+}
+
+.calendar-nav-btn:hover {
+    transform: scale(1.05);
+    background: var(--primary);
+    color: white;
+}
+
+.calendar-actions {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.calendar-actions button {
+    padding: 9px 18px;
+    border-radius: 8px;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: bold;
+}
+
+.calendar-actions button:hover {
+    background: var(--primary);
+    color: white;
+}
+
+
+/* WEEKDAYS */
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.calendar-weekdays div {
+    text-align: center;
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--muted);
+    padding: 10px 5px;
+}
+
+
+/* CALENDAR GRID */
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+}
+
+
+/* INDIVIDUAL DATE */
+
+.calendar-day {
+    min-height: 105px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px;
+    background: var(--card);
+    cursor: pointer;
+    transition: 0.2s;
+    position: relative;
+}
+
+.calendar-day:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.06);
+}
+
+.calendar-day.empty {
+    background: var(--background);
+    cursor: default;
+    opacity: 0.5;
+}
+
+.calendar-day.empty:hover {
+    transform: none;
+    border-color: var(--border);
+    box-shadow: none;
+}
+
+
+/* DATE NUMBER */
+
+.calendar-date-number {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+
+/* TODAY */
+
+.calendar-day.today {
+    border: 2px solid var(--primary);
+}
+
+.calendar-day.today .calendar-date-number {
+    color: var(--primary);
+}
+
+
+/* EXPENSE AMOUNT */
+
+.calendar-expense {
+    color: var(--danger);
+    font-size: 12px;
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+.calendar-income {
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+
+/* NO TRANSACTIONS */
+
+.calendar-no-spending {
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 10px;
+}
+
+
+/* SELECTED DAY */
+
+.selected-day-details {
+    margin-top: 25px;
+    padding: 20px;
+    border-radius: 14px;
+    background: var(--background);
+    border: 1px solid var(--border);
+}
+
+.selected-day-details h3 {
+    margin-bottom: 15px;
+}
+
+.selected-transaction {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.selected-transaction:last-child {
+    border-bottom: none;
+}
+
+.selected-transaction small {
+    color: var(--muted);
+}
+
+.selected-expense {
+    color: var(--danger);
+    font-weight: bold;
+}
+
+.selected-income {
+    color: var(--primary);
+    font-weight: bold;
+}
+
+
+/* ================= CALENDAR RESPONSIVE ================= */
+
+@media (max-width: 750px) {
+
+    .calendar-panel {
+        padding: 15px;
+    }
+
+    .calendar-grid,
+    .calendar-weekdays {
+        gap: 4px;
+    }
+
+    .calendar-day {
+        min-height: 80px;
+        padding: 7px;
+        border-radius: 8px;
+    }
+
+    .calendar-date-number {
+        font-size: 12px;
+    }
+
+    .calendar-expense,
+    .calendar-income {
+        font-size: 10px;
+    }
+
+    .calendar-weekdays div {
+        font-size: 11px;
+        padding: 7px 2px;
+    }
+
+    .calendar-title h2 {
+        font-size: 19px;
+    }
+
+    .calendar-nav-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 23px;
+    }
+
+}
+/* ================= SMALLER CALENDAR ================= */
+
+.calendar-panel {
+    padding: 18px;
+}
+
+.calendar-header {
+    margin-bottom: 10px;
+}
+
+.calendar-title h2 {
+    font-size: 21px;
+}
+
+.calendar-title p {
+    font-size: 12px;
+}
+
+.calendar-nav-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 23px;
+}
+
+.calendar-actions {
+    margin-bottom: 12px;
+}
+
+.calendar-actions button {
+    padding: 7px 15px;
+    font-size: 13px;
+}
+
+.calendar-weekdays {
+    gap: 5px;
+    margin-bottom: 5px;
+}
+
+.calendar-weekdays div {
+    padding: 6px 4px;
+    font-size: 12px;
+}
+
+.calendar-grid {
+    gap: 5px;
+}
+
+.calendar-day {
+    min-height: 72px;
+    padding: 7px;
+    border-radius: 9px;
+}
+
+.calendar-date-number {
+    font-size: 13px;
+    margin-bottom: 5px;
+}
+
+.calendar-expense,
+.calendar-income {
+    font-size: 10px;
+    margin-top: 4px;
+}
+
+.calendar-no-spending {
+    font-size: 9px;
+    margin-top: 6px;
+}
+
+.selected-day-details {
+    margin-top: 15px;
+    padding: 15px;
+}
+/* Keep calendar close to the top of the content area */
+
+#calendar {
+    margin-top: 0;
+}
+
+#calendar .calendar-panel {
+    margin-top: 0;
+}
+/* ================= CALENDAR POSITION FIX ================= */
+
+#calendar {
+    width: 100%;
+    position: relative;
+    z-index: 1;
+}
+
+#calendar .calendar-panel {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 18px;
+}
+
+/* Keep calendar completely inside the main content */
+.main-content {
+    overflow-x: hidden;
+}
+
+/* Make calendar fit properly beside sidebar */
+.calendar-grid,
+.calendar-weekdays {
+    width: 100%;
+    max-width: 100%;
+}
+/* ================= COMPACT CALENDAR ================= */
+
+.calendar-panel {
+    box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+}
+
+.calendar-day {
+    min-height: 62px;
+    padding: 6px;
+}
+
+.calendar-date-number {
+    font-size: 12px;
+    margin-bottom: 3px;
+}
+
+.calendar-expense,
+.calendar-income {
+    font-size: 9px;
+    margin-top: 3px;
+}
+
+.calendar-no-spending {
+    font-size: 8px;
+    margin-top: 4px;
+}
+
+.calendar-weekdays div {
+    padding: 5px 3px;
+    font-size: 11px;
+}
+
+.calendar-grid {
+    gap: 4px;
+}
+
+.calendar-weekdays {
+    gap: 4px;
+}
+/* ================= CALENDAR POSITION FIX ================= */
+
+#calendar {
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    margin-top: -10px;
+}
+
+#calendar .calendar-panel {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 18px;
+}
+
+.main-content {
+    overflow-x: hidden;
+}
+
+.calendar-grid,
+.calendar-weekdays {
+    width: 100%;
+    max-width: 100%;
+}
+
+
+/* ================= COMPACT CALENDAR ================= */
+
+.calendar-day {
+    min-height: 62px;
+    padding: 6px;
+}
+
+.calendar-date-number {
+    font-size: 12px;
+    margin-bottom: 3px;
+}
+
+.calendar-expense,
+.calendar-income {
+    font-size: 9px;
+    margin-top: 3px;
+}
+
+.calendar-no-spending {
+    font-size: 8px;
+    margin-top: 4px;
+}
+
+.calendar-weekdays div {
+    padding: 5px 3px;
+    font-size: 11px;
+}
+
+.calendar-grid {
+    gap: 4px;
+}
+
+.calendar-weekdays {
+    gap: 4px;
+}
+#calendar {
+    margin-top: -10px;
+}
+#welcomeMessage {
+    font-size: 22px;
+    color: var(--primary);
+    margin: 8px 0 4px;
+}
+/* =================================
+   BUDGETBEE WELCOME PAGE ANIMATIONS
+================================= */
+
+/* Whole welcome page */
+#welcomePage.active {
+    animation: pageFade 0.8s ease forwards;
+}
+
+@keyframes pageFade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+
+/* Left side content */
+.welcome-content {
+    animation: contentSlide 0.9s ease forwards;
+}
+
+@keyframes contentSlide {
+    from {
+        opacity: 0;
+        transform: translateX(-40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+
+/* Logo */
+.welcome-content .logo {
+    animation: logoPop 0.8s ease 0.2s both;
+}
+
+@keyframes logoPop {
+    from {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+/* Main heading */
+.welcome-content h2 {
+    animation: headingAppear 0.8s ease 0.35s both;
+}
+
+@keyframes headingAppear {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* Description */
+.welcome-content p {
+    animation: textAppear 0.8s ease 0.5s both;
+}
+
+@keyframes textAppear {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* Get Started button */
+.welcome-content .primary-btn {
+    animation: buttonAppear 0.8s ease 0.65s both;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+@keyframes buttonAppear {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* Button hover */
+.welcome-content .primary-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+
+/* =================================
+   RIGHT SIDE CARD
+================================= */
+
+.welcome-card {
+    animation: cardAppear 1s ease 0.25s both;
+}
+
+@keyframes cardAppear {
+    from {
+        opacity: 0;
+        transform: translateX(40px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+
+/* Gentle floating effect */
+.welcome-card {
+    animation:
+        cardAppear 1s ease 0.25s both,
+        cardFloat 4s ease-in-out 1.2s infinite;
+}
+
+@keyframes cardFloat {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+
+/* =================================
+   BALANCE CARD
+================================= */
+
+.mini-card {
+    animation: miniCardAppear 0.8s ease 0.8s both;
+}
+
+@keyframes miniCardAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+/* =================================
+   CHART BAR ANIMATION
+================================= */
+
+.mini-chart .bar {
+    transform-origin: bottom;
+    transform: scaleY(0);
+    animation: barGrow 0.8s ease forwards;
+}
+
+@keyframes barGrow {
+    from {
+        transform: scaleY(0);
+    }
+
+    to {
+        transform: scaleY(1);
+    }
+}
+
+
+/* Bars appear one after another */
+.mini-chart .b1 {
+    animation-delay: 0.8s;
+}
+
+.mini-chart .b2 {
+    animation-delay: 0.95s;
+}
+
+.mini-chart .b3 {
+    animation-delay: 1.1s;
+}
+
+.mini-chart .b4 {
+    animation-delay: 1.25s;
+}
+
+.mini-chart .b5 {
+    animation-delay: 1.4s;
+}
+
+.mini-chart .b6 {
+    animation-delay: 1.55s;
+}
+
+
+/* =================================
+   MOBILE / REDUCED MOTION
+================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
+    }
 }

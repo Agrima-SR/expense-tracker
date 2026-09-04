@@ -20,7 +20,7 @@ let goals =
 let financeChart;
 let categoryChart;
 let weeklyChart;
-
+let calendarDate = new Date();
 
 /* ================= PAGE NAVIGATION ================= */
 
@@ -38,21 +38,65 @@ function login(event) {
 
     const email =
         document.getElementById("email").value.trim();
+        const name = document.getElementById("name").value.trim();
 
-    if (!email) return;
+    if (!email || !name) return;
 
     localStorage.setItem("userEmail", email);
+    localStorage.setItem("userName", name);
 
-    document.getElementById("profileEmail").textContent =
-        email;
+    document.getElementById("profileEmail").textContent = email;
+    document.getElementById("profileName").textContent = name;
 
-    document.getElementById("profileName").textContent =
-        email.split("@")[0];
+    document.getElementById("welcomeMessage").textContent =
+        `Welcome back, ${name}! 👋`;
 
     document.getElementById("loginPage").classList.remove("active");
+    document.getElementById("dashboardPage").style.display = "flex";
 
-    document.getElementById("dashboardPage").style.display =
-        "flex";
+    /* =================================
+   ANIMATED DASHBOARD NUMBERS
+================================= */
+
+function animateNumber(element, target, duration = 1000) {
+
+    if (!element) return;
+
+    target = Number(target) || 0;
+
+    const start = Number(
+        element.dataset.value || 0
+    );
+
+    const difference = target - start;
+    const startTime = performance.now();
+
+    function update(currentTime) {
+
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // Smooth animation
+        const ease = 1 - Math.pow(1 - progress, 3);
+
+        const currentValue =
+            start + difference * ease;
+
+        element.textContent =
+            formatCurrency(currentValue);
+
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        } else {
+            element.textContent =
+                formatCurrency(target);
+
+            element.dataset.value = target;
+        }
+    }
+
+    requestAnimationFrame(update);
+}
 
     updateAll();
 }
@@ -95,15 +139,20 @@ function showSection(sectionId, button = null) {
 
 
     const titles = {
-        dashboard: "Dashboard",
-        transactions: "Transaction History",
-        budget: "Budget",
-        reports: "Weekly Report",
-        goals: "Savings Goals"
-    };
+    dashboard: "Dashboard",
+    transactions: "Transaction History",
+    budget: "Budget",
+    reports: "Weekly Report",
+    goals: "Savings Goals",
+    calendar: "Spending Calendar"
+};
 
     document.getElementById("sectionTitle").textContent =
         titles[sectionId] || "Dashboard";
+        window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+});
 }
 
 
@@ -132,7 +181,7 @@ function openTransactionModal(type) {
     document.getElementById("amount").value = "";
 
     document.getElementById("transactionDate").value =
-        new Date().toISOString().split("T")[0];
+    getLocalDateString();
 }
 
 
@@ -239,13 +288,13 @@ async function addTransaction(event) {
 
     } catch (error) {
 
-        console.error(error);
+    console.error("Transaction error:", error);
 
-        alert(
-            "Unable to save transaction. Make sure the Java backend is running."
-        );
+    alert(
+        "Transaction error: " + error.message
+    );
 
-    }
+}
 
 }
 
@@ -609,34 +658,185 @@ function updateDashboard() {
         budget - expenses;
 
 
-    document.getElementById("totalIncome")
-        .textContent =
-        formatCurrency(income);
+    animateNumber(
+    document.getElementById("totalIncome"),
+    income
+);
 
-    document.getElementById("totalExpense")
-        .textContent =
-        formatCurrency(expenses);
+animateNumber(
+    document.getElementById("totalExpense"),
+    expenses
+);
 
-    document.getElementById("netBalance")
-        .textContent =
-        formatCurrency(balance);
+animateNumber(
+    document.getElementById("netBalance"),
+    balance
+);
 
-    document.getElementById("budgetLeft")
-        .textContent =
-        formatCurrency(
-            Math.max(budgetLeft, 0)
-        );
+animateNumber(
+    document.getElementById("budgetLeft"),
+    Math.max(budgetLeft, 0)
+);
+
+animateNumber(
+    document.getElementById("welcomeBalance"),
+    balance
+);
 
 
-    document.getElementById("welcomeBalance")
-        .textContent =
-        formatCurrency(balance);
-
-
-    updateInsight();
+    updateFinancialHealth();
+updateInsight();
 
 }
+/* ================= FINANCIAL HEALTH SCORE ================= */
 
+function updateFinancialHealth() {
+
+    const income = getTotalIncome();
+    const expenses = getTotalExpenses();
+
+    let incomeScore = 0;
+    let budgetScore = 0;
+    let expenseScore = 0;
+
+    // Income vs Expenses
+    if (income > 0) {
+
+        const savingRate =
+            ((income - expenses) / income) * 100;
+
+        incomeScore =
+            Math.max(0, Math.min(100, Math.round(savingRate + 50)));
+
+    }
+
+    // Budget Management
+    if (budget > 0) {
+
+        const budgetUsage =
+            (expenses / budget) * 100;
+
+        if (budgetUsage <= 50) {
+            budgetScore = 100;
+        } else if (budgetUsage <= 70) {
+            budgetScore = 85;
+        } else if (budgetUsage <= 80) {
+            budgetScore = 70;
+        } else if (budgetUsage <= 100) {
+            budgetScore = 50;
+        } else {
+            budgetScore = 25;
+        }
+
+    }
+
+    // Expense Control
+    if (income > 0) {
+
+        const expenseRate =
+            (expenses / income) * 100;
+
+        if (expenseRate <= 50) {
+            expenseScore = 100;
+        } else if (expenseRate <= 70) {
+            expenseScore = 85;
+        } else if (expenseRate <= 80) {
+            expenseScore = 70;
+        } else if (expenseRate <= 100) {
+            expenseScore = 50;
+        } else {
+            expenseScore = 25;
+        }
+
+    }
+
+    let score;
+
+    if (income === 0 && expenses === 0) {
+
+        score = 0;
+
+    } else if (income === 0) {
+
+        score = 20;
+
+    } else if (budget === 0) {
+
+        score =
+            Math.round(
+                (incomeScore + expenseScore) / 2
+            );
+
+    } else {
+
+        score =
+            Math.round(
+                (incomeScore +
+                 budgetScore +
+                 expenseScore) / 3
+            );
+
+    }
+
+    // Update main score
+    document.getElementById("healthScore")
+        .textContent = score;
+
+
+    // Update individual percentages
+    document.getElementById("incomeHealth")
+        .textContent = incomeScore + "%";
+
+    document.getElementById("budgetHealth")
+        .textContent = budgetScore + "%";
+
+    document.getElementById("expenseHealth")
+        .textContent = expenseScore + "%";
+
+
+    // Update progress bars
+    document.getElementById("incomeHealthBar")
+        .style.width = incomeScore + "%";
+
+    document.getElementById("budgetHealthBar")
+        .style.width = budgetScore + "%";
+
+    document.getElementById("expenseHealthBar")
+        .style.width = expenseScore + "%";
+
+
+    // Status message
+    const status =
+        document.getElementById("healthStatus");
+
+    if (score === 0) {
+
+        status.textContent =
+            "Add income and expenses to calculate your financial health.";
+
+    } else if (score >= 80) {
+
+        status.textContent =
+            "🌟 Excellent! You're managing your money very well.";
+
+    } else if (score >= 60) {
+
+        status.textContent =
+            "👍 Good! Your finances are on a healthy track.";
+
+    } else if (score >= 40) {
+
+        status.textContent =
+            "⚠️ Fair. A little more control over spending could help.";
+
+    } else {
+
+        status.textContent =
+            "🔎 Your spending needs attention. Review your budget and expenses.";
+
+    }
+
+}
 
 /* ================= SMART INSIGHT ================= */
 
@@ -924,6 +1124,85 @@ function setBudget() {
 
 function updateBudget() {
 
+    /* ================= BUDGET FORECAST ================= */
+
+function updateBudgetForecast() {
+
+    const forecastText =
+        document.getElementById("forecastText");
+
+    if (!forecastText) return;
+
+    const expenses =
+        getTotalExpenses();
+
+
+    if (budget <= 0) {
+
+        forecastText.textContent =
+            "Set a monthly budget to see your spending forecast.";
+
+        return;
+
+    }
+
+
+    if (expenses === 0) {
+
+        forecastText.textContent =
+            "Add some expenses to predict your month-end spending.";
+
+        return;
+
+    }
+
+
+    const today = new Date();
+
+    const currentDay =
+        today.getDate();
+
+    const daysInMonth =
+        new Date(
+            today.getFullYear(),
+            today.getMonth() + 1,
+            0
+        ).getDate();
+
+
+    // Calculate average spending per day
+    const averageDailySpending =
+        expenses / currentDay;
+
+
+    // Predict total spending by the end of the month
+    const predictedExpense =
+        Math.round(
+            averageDailySpending * daysInMonth
+        );
+
+
+    const difference =
+        predictedExpense - budget;
+
+
+    if (difference > 0) {
+
+        forecastText.innerHTML =
+            `⚠️ At your current spending rate, you may spend <strong>${formatCurrency(predictedExpense)}</strong> this month and exceed your budget by approximately <strong>${formatCurrency(difference)}</strong>.`;
+
+    } else {
+
+        const remaining =
+            budget - predictedExpense;
+
+        forecastText.innerHTML =
+            `✅ At your current spending rate, you are predicted to spend approximately <strong>${formatCurrency(predictedExpense)}</strong> this month and stay within your budget with around <strong>${formatCurrency(remaining)}</strong> remaining.`;
+
+    }
+
+}
+
     const expenses =
         getTotalExpenses();
 
@@ -983,7 +1262,11 @@ function updateBudget() {
 
 
     updateBudgetCategories();
+
+updateBudgetForecast();
+
 }
+
 
 
 /* ================= CATEGORY BUDGET ================= */
@@ -1425,6 +1708,18 @@ function displayGoals() {
                     ),
                     100
                 );
+                const remaining = Math.max(goal.target - goal.saved, 0);
+
+const monthlySaving = Math.max(
+    Math.round((getTotalIncome() - getTotalExpenses()) * 0.20),
+    0
+);
+
+let estimatedMonths = 0;
+
+if (monthlySaving > 0 && remaining > 0) {
+    estimatedMonths = Math.ceil(remaining / monthlySaving);
+}
 
 
             return `
@@ -1450,10 +1745,25 @@ function displayGoals() {
                     </div>
 
                     <strong>
-                        ${percentage}% completed
-                    </strong>
+    ${percentage}% completed
+</strong>
 
-                    <br><br>
+<p class="goal-smart-info">
+    💰 Suggested monthly saving:
+    <strong>${formatCurrency(monthlySaving)}</strong>
+</p>
+
+<p class="goal-smart-info">
+    📅 ${
+        remaining === 0
+            ? "🎉 Goal completed!"
+            : estimatedMonths > 0
+                ? `Estimated time: ${estimatedMonths} month${estimatedMonths > 1 ? "s" : ""}`
+                : "Add income and expenses to estimate your goal time."
+    }
+</p>
+
+<br>
 
                     <button
                         class="delete-btn"
@@ -1533,7 +1843,47 @@ async function loadTransactions() {
     }
 }
 /* ================= UPDATE EVERYTHING ================= */
+function animateNumber(element, target, duration = 1000) {
 
+    if (!element) return;
+
+    target = Number(target) || 0;
+
+    const start = Number(element.dataset.value || 0);
+    const difference = target - start;
+    const startTime = performance.now();
+
+    function update(currentTime) {
+
+        const elapsed = currentTime - startTime;
+
+        const progress =
+            Math.min(elapsed / duration, 1);
+
+        const ease =
+            1 - Math.pow(1 - progress, 3);
+
+        const currentValue =
+            start + difference * ease;
+
+        element.textContent =
+            formatCurrency(currentValue);
+
+        if (progress < 1) {
+
+            requestAnimationFrame(update);
+
+        } else {
+
+            element.textContent =
+                formatCurrency(target);
+
+            element.dataset.value = target;
+        }
+    }
+
+    requestAnimationFrame(update);
+}
 function updateAll() {
 
     updateDashboard();
@@ -1551,6 +1901,7 @@ function updateAll() {
     createFinanceChart();
 
     createCategoryChart();
+    renderCalendar();
 
 }
 
@@ -1604,6 +1955,15 @@ document.addEventListener(
 
         const savedEmail =
             localStorage.getItem("userEmail");
+            const savedName = localStorage.getItem("userName");
+
+            if (savedName) {
+    document.getElementById("welcomeMessage").textContent =
+        `Welcome back, ${savedName}! 👋`;
+
+    document.getElementById("profileName").textContent =
+        savedName;
+}
 
         if (savedEmail) {
 
@@ -1679,3 +2039,294 @@ window.addEventListener(
 
     }
 );
+/* ================= SPENDING CALENDAR ================= */
+
+function getLocalDateString(date = new Date()) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+
+function renderCalendar() {
+
+    const calendarGrid =
+        document.getElementById("calendarGrid");
+
+    const calendarMonthYear =
+        document.getElementById("calendarMonthYear");
+
+    if (!calendarGrid || !calendarMonthYear) return;
+
+
+    const year = calendarDate.getFullYear();
+    const month = calendarDate.getMonth();
+
+
+    const monthName =
+        calendarDate.toLocaleDateString("en-IN", {
+            month: "long",
+            year: "numeric"
+        });
+
+
+    calendarMonthYear.textContent = monthName;
+
+
+    calendarGrid.innerHTML = "";
+
+
+    /*
+       JavaScript:
+       Sunday = 0
+       Monday = 1
+       ...
+       Saturday = 6
+
+       We want Monday as the first day.
+    */
+
+    const firstDay =
+        new Date(year, month, 1).getDay();
+
+    const startingDay =
+        firstDay === 0 ? 6 : firstDay - 1;
+
+
+    const daysInMonth =
+        new Date(year, month + 1, 0).getDate();
+
+
+    // Empty boxes before the first day
+    for (let i = 0; i < startingDay; i++) {
+
+        const emptyDay =
+            document.createElement("div");
+
+        emptyDay.className =
+            "calendar-day empty";
+
+        calendarGrid.appendChild(emptyDay);
+    }
+
+
+    // Create each date
+    for (let day = 1; day <= daysInMonth; day++) {
+
+        const dateObject =
+            new Date(year, month, day);
+
+        const dateString =
+            getLocalDateString(dateObject);
+
+
+        const dayTransactions =
+            transactions.filter(
+                transaction =>
+                    transaction.date === dateString
+            );
+
+
+        const expenses =
+            dayTransactions
+                .filter(t => t.type === "expense")
+                .reduce(
+                    (total, t) =>
+                        total + Number(t.amount),
+                    0
+                );
+
+
+        const income =
+            dayTransactions
+                .filter(t => t.type === "income")
+                .reduce(
+                    (total, t) =>
+                        total + Number(t.amount),
+                    0
+                );
+
+
+        const dayElement =
+            document.createElement("div");
+
+        dayElement.className =
+            "calendar-day";
+
+
+        // Highlight today
+        if (dateString === getLocalDateString()) {
+            dayElement.classList.add("today");
+        }
+
+
+        let content = `
+            <div class="calendar-date-number">
+                ${day}
+            </div>
+        `;
+
+
+        if (expenses > 0) {
+
+            content += `
+                <div class="calendar-expense">
+                    💸 ${formatCurrency(expenses)}
+                </div>
+            `;
+
+        } else {
+
+            content += `
+                <div class="calendar-no-spending">
+                    No spending
+                </div>
+            `;
+        }
+
+
+        if (income > 0) {
+
+            content += `
+                <div class="calendar-income">
+                    💰 ${formatCurrency(income)}
+                </div>
+            `;
+        }
+
+
+        dayElement.innerHTML = content;
+
+
+        dayElement.addEventListener(
+            "click",
+            () => showDayTransactions(dateString)
+        );
+
+
+        calendarGrid.appendChild(dayElement);
+    }
+}
+function changeCalendarMonth(change) {
+
+    calendarDate.setMonth(
+        calendarDate.getMonth() + change
+    );
+
+    renderCalendar();
+
+    document.getElementById(
+        "selectedDayDetails"
+    ).innerHTML = "";
+}
+
+
+function goToToday() {
+
+    calendarDate = new Date();
+
+    renderCalendar();
+
+    document.getElementById(
+        "selectedDayDetails"
+    ).innerHTML = "";
+}
+function showDayTransactions(dateString) {
+
+    const details =
+        document.getElementById(
+            "selectedDayDetails"
+        );
+
+    const dayTransactions =
+        transactions.filter(
+            transaction =>
+                transaction.date === dateString
+        );
+
+
+    const dateObject =
+        new Date(
+            Number(dateString.substring(0, 4)),
+            Number(dateString.substring(5, 7)) - 1,
+            Number(dateString.substring(8, 10))
+        );
+
+
+    const formattedDate =
+        dateObject.toLocaleDateString("en-IN", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        });
+
+
+    let html = `
+        <h3>${formattedDate}</h3>
+    `;
+
+
+    if (dayTransactions.length === 0) {
+
+        html += `
+            <p class="empty-state">
+                No transactions on this day.
+            </p>
+        `;
+
+        details.innerHTML = html;
+        return;
+    }
+
+
+    dayTransactions.forEach(transaction => {
+
+        const isIncome =
+            transaction.type === "income";
+
+
+        const amountClass =
+            isIncome
+                ? "selected-income"
+                : "selected-expense";
+
+
+        const sign =
+            isIncome ? "+" : "-";
+
+
+        html += `
+            <div class="selected-transaction">
+
+                <div>
+                    <strong>
+                        ${escapeHTML(
+                            transaction.description ||
+                            transaction.category ||
+                            "Transaction"
+                        )}
+                    </strong>
+
+                    <small>
+                        ${escapeHTML(
+                            transaction.category || ""
+                        )}
+                    </small>
+                </div>
+
+                <span class="${amountClass}">
+                    ${sign}${formatCurrency(
+                        transaction.amount
+                    )}
+                </span>
+
+            </div>
+        `;
+    });
+
+
+    details.innerHTML = html;
+}
