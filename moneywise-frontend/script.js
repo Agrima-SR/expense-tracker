@@ -1,18 +1,18 @@
 /* =====================================================
    BudgetBee
 ===================================================== */
-const API_URL = " https://budgetbee-wg5e.onrender.com/api/transactions";
+const API_URL = "https://budgetbee-wg5e.onrender.com/api/transactions";
+function getCurrentUserEmail() {
+    return localStorage.getItem("userEmail");
+}
 
 /* ================= DATA ================= */
 
-let transactions =
-    JSON.parse(localStorage.getItem("transactions")) || [];
+let transactions = [];
 
-let budget =
-    Number(localStorage.getItem("budget")) || 0;
+let budget = 0;
 
-let goals =
-    JSON.parse(localStorage.getItem("goals")) || [];
+let goals = [];
 
 
 /* ================= CHARTS ================= */
@@ -44,6 +44,22 @@ function login(event) {
 
     localStorage.setItem("userEmail", email);
     localStorage.setItem("userName", name);
+    const userKey = encodeURIComponent(email);
+
+transactions =
+    JSON.parse(
+        localStorage.getItem(`transactions_${userKey}`)
+    ) || [];
+
+budget =
+    Number(
+        localStorage.getItem(`budget_${userKey}`)
+    ) || 0;
+
+goals =
+    JSON.parse(
+        localStorage.getItem(`goals_${userKey}`)
+    ) || [];
 
     document.getElementById("profileEmail").textContent = email;
     document.getElementById("profileName").textContent = name;
@@ -53,6 +69,8 @@ function login(event) {
 
     document.getElementById("loginPage").classList.remove("active");
     document.getElementById("dashboardPage").style.display = "flex";
+
+    loadTransactions();
 
     /* =================================
    ANIMATED DASHBOARD NUMBERS
@@ -104,10 +122,12 @@ function animateNumber(element, target, duration = 1000) {
 
 function logout() {
 
-    document.getElementById("dashboardPage").style.display =
-        "none";
-
+    document.getElementById("dashboardPage").style.display = "none";
     document.getElementById("welcomePage").classList.add("active");
+
+    transactions = [];
+    budget = 0;
+    goals = [];
 }
 
 
@@ -235,7 +255,8 @@ async function addTransaction(event) {
 
     try {
 
-        const response = await fetch(API_URL, {
+        const response = await fetch(
+    `${API_URL}?userEmail=${encodeURIComponent(getCurrentUserEmail())}`, {
 
             method: "POST",
 
@@ -249,8 +270,10 @@ async function addTransaction(event) {
 
 
         if (!response.ok) {
-            throw new Error("Failed to save transaction");
-        }
+    const errorText = await response.text();
+    console.error("Server error:", errorText);
+    throw new Error(errorText || "Failed to save transaction");
+}
 
 
         const savedTransaction =
@@ -311,11 +334,11 @@ async function deleteTransaction(id) {
     try {
 
         const response = await fetch(
-            `${API_URL}/${id}`,
-            {
-                method: "DELETE"
-            }
-        );
+    `${API_URL}/${id}?userEmail=${encodeURIComponent(getCurrentUserEmail())}`,
+    {
+        method: "DELETE"
+    }
+);
 
         if (!response.ok) {
             throw new Error("Failed to delete transaction");
@@ -1106,11 +1129,13 @@ function setBudget() {
 
     budget = value;
 
-    localStorage.setItem(
-        "budget",
-        budget
-    );
+    const userEmail = getCurrentUserEmail();
+const userKey = encodeURIComponent(userEmail);
 
+localStorage.setItem(
+    `budget_${userKey}`,
+    budget
+);
 
     updateBudget();
 
@@ -1799,30 +1824,45 @@ function toggleTheme() {
 
 function saveData() {
 
+    const userEmail = getCurrentUserEmail();
+
+    if (!userEmail) return;
+
+    const userKey = encodeURIComponent(userEmail);
+
     localStorage.setItem(
-        "transactions",
+        `transactions_${userKey}`,
         JSON.stringify(transactions)
     );
 
     localStorage.setItem(
-        "budget",
+        `budget_${userKey}`,
         budget
     );
 
     localStorage.setItem(
-        "goals",
+        `goals_${userKey}`,
         JSON.stringify(goals)
     );
-
 }
 
 /* ================= LOAD TRANSACTIONS ================= */
 
 async function loadTransactions() {
 
+    const userEmail = getCurrentUserEmail();
+
+    if (!userEmail) {
+        transactions = [];
+        updateAll();
+        return;
+    }
+
     try {
 
-        const response = await fetch(API_URL);
+        const response = await fetch(
+            `${API_URL}?userEmail=${encodeURIComponent(userEmail)}`
+        );
 
         if (!response.ok) {
             throw new Error("Failed to load transactions");
@@ -1839,7 +1879,6 @@ async function loadTransactions() {
         console.error("Error loading transactions:", error);
 
         updateAll();
-
     }
 }
 /* ================= UPDATE EVERYTHING ================= */
@@ -1949,57 +1988,48 @@ function escapeHTML(value) {
 
 /* ================= INITIAL LOAD ================= */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
+document.addEventListener("DOMContentLoaded", () => {
 
-        const savedEmail =
-            localStorage.getItem("userEmail");
-            const savedName = localStorage.getItem("userName");
+    const savedEmail = localStorage.getItem("userEmail");
+    const savedName = localStorage.getItem("userName");
 
-            if (savedName) {
-    document.getElementById("welcomeMessage").textContent =
-        `Welcome back, ${savedName}! 👋`;
+    if (savedEmail && savedName) {
 
-    document.getElementById("profileName").textContent =
-        savedName;
-}
+        const userKey = encodeURIComponent(savedEmail);
 
-        if (savedEmail) {
+        transactions =
+            JSON.parse(
+                localStorage.getItem(`transactions_${userKey}`)
+            ) || [];
 
-            document.getElementById(
-                "profileEmail"
-            ).textContent =
-                savedEmail;
+        budget =
+            Number(
+                localStorage.getItem(`budget_${userKey}`)
+            ) || 0;
 
-            document.getElementById(
-                "profileName"
-            ).textContent =
-                savedEmail.split("@")[0];
+        goals =
+            JSON.parse(
+                localStorage.getItem(`goals_${userKey}`)
+            ) || [];
 
-        }
+        document.getElementById("profileEmail").textContent =
+            savedEmail;
 
+        document.getElementById("profileName").textContent =
+            savedName;
 
-        if (
-            localStorage.getItem("darkMode")
-            === "true"
-        ) {
-
-            document.body.classList.add("dark");
-
-        }
-
-
-        document.getElementById(
-            "dashboardPage"
-        ).style.display = "none";
-
+        document.getElementById("welcomeMessage").textContent =
+            `Welcome back, ${savedName}! 👋`;
 
         loadTransactions();
-
     }
-);
 
+    if (localStorage.getItem("darkMode") === "true") {
+        document.body.classList.add("dark-mode");
+    }
+
+    document.getElementById("dashboardPage").style.display = "none";
+});
 
 /* ================= CLOSE MODAL WHEN CLICKING OUTSIDE ================= */
 

@@ -19,17 +19,28 @@ public class TransactionController {
     }
 
     @GetMapping
-    public List<Transaction> getAllTransactions() {
-        return repository.findAll();
+    public List<Transaction> getAllTransactions(
+            @RequestParam String userEmail) {
+
+        return repository.findByUserEmail(userEmail);
     }
 
     @PostMapping
-    public Transaction addTransaction(@RequestBody Transaction transaction) {
+    public Transaction addTransaction(
+            @RequestParam String userEmail,
+            @RequestBody Transaction transaction) {
+
+        transaction.setUserEmail(userEmail);
+
         return repository.save(transaction);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteTransaction(@PathVariable Long id) {
-        repository.deleteById(id);
+    public void deleteTransaction(
+            @PathVariable Long id,
+            @RequestParam String userEmail) {
+
+        repository.findByIdAndUserEmail(id, userEmail)
+                .ifPresent(repository::delete);
     }
 }
