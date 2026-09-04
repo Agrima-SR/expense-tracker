@@ -1,7 +1,7 @@
 /* =====================================================
    BudgetBee
 ===================================================== */
-const API_URL = "http://localhost:8080/api/transactions";
+const API_URL = " https://budgetbee-wg5e.onrender.com/api/transactions";
 
 /* ================= DATA ================= */
 
