@@ -270,8 +270,10 @@ async function addTransaction(event) {
 
 
         if (!response.ok) {
-            throw new Error("Failed to save transaction");
-        }
+    const errorText = await response.text();
+    console.error("Server error:", errorText);
+    throw new Error(errorText || "Failed to save transaction");
+}
 
 
         const savedTransaction =
